@@ -27,6 +27,7 @@ int main(int argc, char* argv[])
     int status[2];
     char* from_path;
     char* to_path;
+    int ret = 0;
 
     while ((opt = getopt(argc, argv, "rh")) != -1) {
         switch (opt)
@@ -54,7 +55,16 @@ int main(int argc, char* argv[])
     }
 
     from_path = path_resolve(argv[optind]);
+    if(from_path == NULL) {
+        fputs("Failed to resolve source path\n", stderr);
+        exit(-1);
+    }
     to_path = path_resolve(argv[optind + 1]);
+    if(to_path == NULL) {
+        fputs("Failed to resolve source path\n", stderr);
+        ret = -1;
+        goto free_from_path;
+    }
 
     printf("from:\t%s\nto:\t%s\nflags:\t%x\n", from_path, to_path, flags);
 
@@ -65,7 +75,8 @@ int main(int argc, char* argv[])
         else
             perror("Couldn't open the source to copy from");
         
-        exit(-1);
+        ret = -1;
+        goto free_to_path;
     }
     
     status[1] = isdir(to_path);
@@ -76,21 +87,24 @@ int main(int argc, char* argv[])
         char* tmp = strdup(to_path);
         if (!tmp) {
             fputs("Wrong destination\n", stderr);
-            exit(-1);
+            ret = -1;
+            goto free_to_path;
         }
         
         char* prc = strrchr(tmp, '/');
         if (!prc) {
             fputs("Wrong destination\n", stderr);
             free(tmp);
-            exit(-1);
+            ret = -1;
+            goto free_to_path;
         }
 
         *prc = '\0';
         if (isdir(tmp) != 1) {
             fputs("Wrong destination\n", stderr);
             free(tmp);
-            exit(-1);
+            ret = -1;
+            goto free_to_path;
         }
 
         free(tmp);
@@ -98,8 +112,14 @@ int main(int argc, char* argv[])
 
     if (!IS_RECURSIVE(flags) && status[0] == 1) {
         fprintf(stderr, "%s is a directory\n", from_path);
-        exit(-1);
+        ret = -1;
+        goto free_to_path;
     }
 
-    return 0;
+free_to_path:
+    free(from_path);
+free_from_path:
+    free(to_path);
+
+    return ret;
 }
