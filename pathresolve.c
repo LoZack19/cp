@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <linux/limits.h>
 
+// @vbextreme contribution to Leonia-Tech/texted
+
 // Find how many times the character ch appears in str
 static unsigned int strocc(const char* str, char ch)
 {
