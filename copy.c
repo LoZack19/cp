@@ -20,6 +20,32 @@ int isdir(char* filename)
     return S_ISDIR(st.st_mode);
 }
 
+int isempty(char* dir_name)
+{
+    DIR* dir;
+    struct dirent* entry;
+    int ret = 0;
+    
+    if (INV_STR(dir_name))
+        return -1;
+
+    dir = opendir(dir_name);
+    if (!dir)
+        return -1;
+    
+    errno = 0;
+    entry = readdir(dir);
+    if (!entry) {
+        if (errno)
+            ret = -1;
+        else
+            ret = 1;
+    }
+
+    closedir(dir);
+    return ret;
+}
+
 char* filename_from_path(char* path)
 {
     char* filename;

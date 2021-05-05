@@ -23,7 +23,7 @@ static unsigned int strocc(const char* str, char ch)
 	return counter;
 }
 
-static void path_kill_back(char* path)
+void path_kill_back(char* path)
 {
 	size_t len = strlen(path);
 

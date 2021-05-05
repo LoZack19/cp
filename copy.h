@@ -10,6 +10,8 @@
 
 int isdir(char* filename);
 
+int isempty(char* dir_name);
+
 char* filename_from_path(char* path);
 
 int adjust_dir_name(char* dir);
