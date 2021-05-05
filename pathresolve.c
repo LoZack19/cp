@@ -67,6 +67,8 @@ char* path_resolve(const char* path)
 	size_t lpath = strlen(path);
 	if (lpath > PATH_MAX - 1)
         return NULL;
+	
+	count = strocc(path, '/');
 
 	if ((lpath == 1 && !strncmp(path, "~", 1)) || !strncmp(path, "~/", 2)) {
 		if (path_home(cur)) 
@@ -75,7 +77,7 @@ char* path_resolve(const char* path)
             return NULL;
 		if (path[1] && path[2])
 			strcpy(&cur[strlen(cur)], &path[1]);
-	} else if ((lpath == 1 && !strncmp(path, ".", 1)) || !strncmp(path, "./", 2) || (count = strocc(path, '/')) == 0) {
+	} else if ((lpath == 1 && !strncmp(path, ".", 1)) || !strncmp(path, "./", 2) || count == 0) {
 		getcwd(cur, PATH_MAX);
 
 		if (lpath + strlen(cur) > PATH_MAX - 1)
