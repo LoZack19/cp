@@ -92,7 +92,7 @@ char* complete_path(char* dir, char* path)
     if (INV_STR(filename))
         return NULL;
     
-    np_size = strlen(dir) + strlen(filename);
+    np_size = strlen(dir) + strlen(filename) + 2;
     new_path = malloc(np_size);
     if (!new_path)
         return NULL;
@@ -101,18 +101,33 @@ char* complete_path(char* dir, char* path)
     return new_path;
 }
 
+mode_t get_mode(char* filename)
+{
+    struct stat st;
+
+    if (stat(filename, &st) == -1)
+        return -1;
+    else
+        return st.st_mode;
+}
+
 // Vulnerable to invalid strings. It's better to always use the copy() wrapper
 int _copy(char* from_path, char* to_path)
 {
     int from, to;
     char buffer[BUF_LEN];
     ssize_t numr;
+    mode_t mode;
     
     from = open(from_path, O_RDONLY);
     if (from == -1)
         return -1;
     
-    to = open(to_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    mode = get_mode(from_path);
+    if (mode == (mode_t)(-1))
+        mode = 0644;
+    
+    to = open(to_path, O_WRONLY | O_CREAT | O_TRUNC, mode);
     if (to == -1)
         goto exit_close_from;
     

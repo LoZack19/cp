@@ -8,6 +8,9 @@
 #include <unistd.h>
 #include <getopt.h>
 
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include "copy.h"
 #include "pathresolve.h"
 
@@ -97,7 +100,28 @@ int parse(char* source, char* destination, uint8_t flags)
 
 int main_copy(char* source, char* destination, uint8_t flags)
 {
-    return parse(source, destination, flags);
+    int status = parse(source, destination, flags);
+    if (status == -1)
+        return -1;
+    
+    if (status == 1) {
+        destination = complete_path(destination, source);
+        if (!destination)
+            return -1;
+        
+        status = main_copy(source, destination, flags);
+        free(destination);
+    } else if (status == 0) {
+        if (IS_RECURSIVE(flags)) {
+            status = r_copy(source, destination);
+        } else if (isdir(source) == 1) {
+            status = mkdir(destination, 0766);
+        } else {
+            status = copy(source, destination);
+        }
+    }
+
+    return status;
 }
 
 int main(int argc, char* argv[])
@@ -155,10 +179,7 @@ int main(int argc, char* argv[])
     printf("from:\t%s\nto:\t%s\nflags:\t%x\n", from_path, to_path, flags);
 
     ret = main_copy(from_path, to_path, flags);
-    if (ret == -1)
-        goto free_to_path;
 
-free_to_path:
     free(from_path);
 free_from_path:
     free(to_path);
