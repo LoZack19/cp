@@ -249,10 +249,12 @@ int r_copy(char* from_path, char* to_path)
             free(new_to_path);
         }
 
-        closedir(dir);
-
-        if (errno != 0)
+        if (errno != 0 && errno != ENOENT)
             return -1;
+        else
+            errno = 0;
+        
+        closedir(dir);
     }
 
     return ret;

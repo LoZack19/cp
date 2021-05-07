@@ -179,6 +179,8 @@ int main(int argc, char* argv[])
     printf("from:\t%s\nto:\t%s\nflags:\t%x\n", from_path, to_path, flags);
 
     ret = main_copy(from_path, to_path, flags);
+    if (ret == -1)
+        perror("Error");
 
     free(from_path);
 free_from_path:
