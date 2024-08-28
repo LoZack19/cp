@@ -7,7 +7,7 @@
 #include <string.h>
 #include <dirent.h>
 
-#include "copy.h"
+#include <include/copy.h>
 
 int isdir(char* filename)
 {

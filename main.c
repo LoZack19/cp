@@ -11,8 +11,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include "copy.h"
-#include "pathresolve.h"
+#include <include/copy.h>
+#include <include/pathresolve.h>
 
 #define F_RECURSIVE     0x01
 #define F_FORCED        0x02

@@ -1,8 +1,8 @@
 CC=gcc
-CFLAGS=-g -Wall -Wextra
+CFLAGS=-g -Wall -Wextra -I.
 
 TARGET=cp
-OBJ=copy.o main.o pathresolve.o
+OBJ=src/copy.o main.o src/pathresolve.o
 
 .PHONY=all
 all: $(TARGET)
@@ -19,4 +19,4 @@ clean:
 
 .PHONY=count
 count:
-	wc -l *.c *.h
+	wc -l main.c src/*.c include/*.h
